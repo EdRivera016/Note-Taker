@@ -32,7 +32,6 @@ The Technologies used in the app:
 * Fetch API
   
 ## Installation 
-
 1. Clone the repo: git@github.com:EdRivera016/Note-Taker.git
 2. Install dependencies: npm install.
 3. Start Server with npm start or node server.js.
