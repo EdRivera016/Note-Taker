@@ -1,79 +1,64 @@
-// const router = require('express').Router();
-// const { v4: uuidv4 } = require('uuid');
-// const fs = require('fs');
-// const path = require('path');
-
-// // Function to read notes from the db.json file
-// const readNotes = () => {
-//   const data = fs.readFileSync(path.join(__dirname, '../db/db.json'), 'utf8');
-//   return JSON.parse(data);
-// };
-
-// // Function to write notes to the db.json file
-// const writeNotes = (notes) => {
-//   fs.writeFileSync(path.join(__dirname, '../db/db.json'), JSON.stringify(notes, null, 2));
-// };
-
-// // GET request to retrieve notes
-// router.get('/notes', (req, res) => {
-//   const notes = readNotes();
-//   res.json(notes);
-// });
-
-// // POST request to add a new note
-// router.post('/notes', (req, res) => {
-//   const notes = readNotes();
-//   const newNote = {
-//     title: req.body.title,
-//     text: req.body.text,
-//     id: uuidv4(),
-//   };
-//   notes.push(newNote);
-//   writeNotes(notes);
-//   res.json(newNote);
-// });
-
-// // DELETE request to delete a note
-// router.delete('/notes/:id', (req, res) => {
-//   let notes = readNotes();
-//   notes = notes.filter(note => note.id !== req.params.id);
-//   writeNotes(notes);
-//   res.json({ message: 'Note deleted successfully' });
-// });
-
-// module.exports = router;
-
+// Import the express router
 const router = require('express').Router();
-const { v4: uuidv4 } = require('uuid');
-const fs = require ("fs");
 
-// Defines the get request to this routes end point '/api/notes'
+// Import the UUID library to generate unique IDs
+const { v4: uuidv4 } = require('uuid');
+
+// Import the file system module to read and write files
+const fs = require('fs');
+
+// Define the GET request for the endpoint '/api/notes'
+// This endpoint retrieves all notes from the database
 router.get('/api/notes', async (req, res) => {
-  const dbJson = await JSON.parse(fs.readFileSync("db/db.json","utf8"));
+  // Read and parse the contents of the db.json file
+  const dbJson = await JSON.parse(fs.readFileSync("db/db.json", "utf8"));
+  // Send the parsed JSON data as the response
   res.json(dbJson);
 });
 
-// Defines the post request to this routes end point '/api/notes'
+// Define the POST request for the endpoint '/api/notes'
+// This endpoint adds a new note to the database
 router.post('/api/notes', (req, res) => {
-  const dbJson = JSON.parse(fs.readFileSync("db/db.json","utf8"));
+  // Read and parse the existing notes from the db.json file
+  const dbJson = JSON.parse(fs.readFileSync("db/db.json", "utf8"));
+  
+  // Create a new note object with a unique ID
   const newFeedback = {
     title: req.body.title,
     text: req.body.text,
     id: uuidv4(),
   };
+
+  // Add the new note to the array of existing notes
   dbJson.push(newFeedback);
-  fs.writeFileSync("db/db.json",JSON.stringify(dbJson));
+
+  // Write the updated array of notes back to the db.json file
+  fs.writeFileSync("db/db.json", JSON.stringify(dbJson));
+
+  // Send the updated array of notes as the response
   res.json(dbJson);
 });
 
+// Define the DELETE request for the endpoint '/api/notes/:id'
+// This endpoint deletes a note by its ID
 router.delete('/api/notes/:id', (req, res) => {
+  // Read the contents of the db.json file
   let data = fs.readFileSync("db/db.json", "utf8");
-  const dataJSON =  JSON.parse(data);
-  const newNotes = dataJSON.filter((note) => { 
+
+  // Parse the JSON data
+  const dataJSON = JSON.parse(data);
+
+  // Filter out the note with the ID specified in the request parameters
+  const newNotes = dataJSON.filter((note) => {
     return note.id !== req.params.id;
   });
-  fs.writeFileSync("db/db.json",JSON.stringify(newNotes));
+
+  // Write the updated array of notes back to the db.json file
+  fs.writeFileSync("db/db.json", JSON.stringify(newNotes));
+
+  // Send a response indicating the note was deleted
   res.json("Note deleted.");
 });
 
-module.exports = router; 
+// Export the router so it can be used in other parts of the application
+module.exports = router;
